@@ -55,66 +55,70 @@ const LoginSlideIn = ({ showLogin, setShowLogin }) => {
   const navigate = useNavigate();
 
   const validateForm = () => {
-    setIsEmailValid(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
-    setIsPasswordValid(password.length >= 6);
-    if (isSignup) {
-      setIsNameValid(name.length > 3); // Validate name length only in sign-up mode
-    }
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isPasswordValid = password.length >= 6;
+    const isNameValid = isSignup ? name.length > 3 : true; // Only validate name in sign-up mode
+
+    // Update state values
+    setIsEmailValid(isEmailValid);
+    setIsPasswordValid(isPasswordValid);
+    setIsNameValid(isNameValid);
+
+    // Return true if all validations are passed
+    return isEmailValid && isPasswordValid && isNameValid;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    validateForm();
 
-    if (isEmailValid && isPasswordValid && (isSignup ? isNameValid : true)) {
-      try {
-        if (isSignup) {
-          // Handle sign-up process
-          const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-          console.log("User signed up:", userCredential.user);
+    // If form validation fails, stop submission
+    if (!validateForm()) {
+      return;
+    }
 
-          // Show a success toast
-          toast({
-            title: "Account created.",
-            description: "You've successfully signed up.",
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-          });
+    try {
+      if (isSignup) {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        console.log("User signed up:", userCredential.user);
 
-          // Toggle back to login mode after successful sign-up
-          setIsSignup(false);
-          setEmail("");
-          setPassword("");
-          setName("");
-        } else {
-          // Handle login process
-          const userCredential = await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-          console.log("User logged in:", userCredential.user);
+        toast({
+          title: "Account created.",
+          description: "You've successfully signed up.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
 
-          // Show a success toast
-          toast({
-            title: "Login successful.",
-            description: "You've successfully logged in.",
-            status: "success",
-            duration: 5000,
-            isClosable: true,
-          });
+        // Reset form fields and switch to login mode
+        setIsSignup(false);
+        setEmail("");
+        setPassword("");
+        setName("");
+      } else {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        console.log("User logged in:", userCredential.user);
 
-          navigate("/"); // Redirect to home page after successful login
-          setShowLogin(false); // Close the login slider
-        }
-      } catch (error) {
-        setErrorMessage(error.message);
+        toast({
+          title: "Login successful.",
+          description: "You've successfully logged in.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+
+        navigate("/"); // Redirect to the home page after login
+        setShowLogin(false); // Close the login slider
       }
+    } catch (error) {
+      setErrorMessage(error.message);
     }
   };
 
