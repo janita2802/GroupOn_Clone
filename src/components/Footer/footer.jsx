@@ -22,7 +22,7 @@ import {
   FaArrowRight,
   FaStar,
 } from "react-icons/fa";
-import QuickLinks from "../footer/QuickLinks";
+import QuickLinks from "./QuickLinks";
 import CountrySelection from "./CountrySelection";
 
 const Footer = () => {
