@@ -14,7 +14,7 @@ import {
   IconButton,
   FormControl,
   FormErrorMessage,
-  useToast, // Import useToast from Chakra UI
+  useToast,
 } from "@chakra-ui/react";
 import {
   FaFacebookF,
@@ -39,9 +39,10 @@ import { auth } from "../firebase";
 const LoginSlideIn = ({ showLogin, setShowLogin }) => {
   const toast = useToast(); // Initialize the toast hook
   const handleClose = () => {
+    console.log("Closing login slide");
     setShowLogin(false); // Close the login modal
   };
-
+  const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState(""); // New state for name
@@ -73,11 +74,13 @@ const LoginSlideIn = ({ showLogin, setShowLogin }) => {
 
     // If form validation fails, stop submission
     if (!validateForm()) {
+      console.log("Validation failed");
       return;
     }
 
     try {
       if (isSignup) {
+        console.log("Signing up user with email:", email);
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
@@ -99,6 +102,7 @@ const LoginSlideIn = ({ showLogin, setShowLogin }) => {
         setPassword("");
         setName("");
       } else {
+        console.log("Logging in user with email:", email);
         const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
@@ -118,6 +122,7 @@ const LoginSlideIn = ({ showLogin, setShowLogin }) => {
         setShowLogin(false); // Close the login slider
       }
     } catch (error) {
+      console.log("Error during authentication:", error.message);
       setErrorMessage(error.message);
     }
   };
@@ -168,7 +173,10 @@ const LoginSlideIn = ({ showLogin, setShowLogin }) => {
             borderRadius={0}
             _hover={{ textDecoration: "none" }}
             color={!isSignup ? "black" : "gray.500"}
-            onClick={() => setIsSignup(false)}
+            onClick={() => {
+              console.log("Switching to login mode");
+              setIsSignup(false);
+            }}
             mr={2}
           >
             I have an account
@@ -181,7 +189,10 @@ const LoginSlideIn = ({ showLogin, setShowLogin }) => {
             borderBottom={isSignup ? "2.8px solid black" : "none"}
             borderRadius={0}
             _hover={{ textDecoration: "none" }}
-            onClick={() => setIsSignup(true)}
+            onClick={() => {
+              console.log("Switching to sign-up mode");
+              setIsSignup(true);
+            }}
             color={isSignup ? "black" : "gray.500"}
           >
             I'm a new customer
@@ -268,14 +279,11 @@ const LoginSlideIn = ({ showLogin, setShowLogin }) => {
               </Box>
             </FormControl>
           </Stack>
-
           {errorMessage && <Text color="red.500">{errorMessage}</Text>}
-
           <Flex justify="space-between" align="center" my={4}>
             {!isSignup && <Checkbox>Remember me</Checkbox>}
             <Link color="blue.500">Forgot Password?</Link>
           </Flex>
-
           <Button
             colorScheme="green"
             width="full"
@@ -285,7 +293,6 @@ const LoginSlideIn = ({ showLogin, setShowLogin }) => {
           >
             {isSignup ? "Sign Up" : "Sign In"}
           </Button>
-
           {!isSignup && (
             <>
               <Text fontSize="xs" color="gray.500" textAlign="center" mt={4}>
@@ -295,13 +302,12 @@ const LoginSlideIn = ({ showLogin, setShowLogin }) => {
               </Text>
             </>
           )}
-
           {/* Terms and Privacy notice */}
           <Text fontSize="xs" color="gray.500" textAlign="center" mt={4}>
             By clicking an option above, I agree to the{" "}
             <Link color="blue.500">Terms and Conditions</Link> and have read the{" "}
             <Link color="blue.500">Privacy Statement</Link>.
-          </Text>
+          </Text>{" "}
         </form>
 
         {/* Footer section */}
