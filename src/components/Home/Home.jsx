@@ -86,6 +86,10 @@ function Home() {
   const cityData = ["Chicago", "New York", "Los Angeles"];
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       setLoading(true); // Start loading
 
