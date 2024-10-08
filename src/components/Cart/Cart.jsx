@@ -69,6 +69,11 @@ const CartPage = () => {
     }
   }, [user]);
 
+  // Scroll to the top when the component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []); // Empty dependency array to run only on component mount
+
   if (!user) {
     return <LoginPrompt showLogin={showLogin} setShowLogin={setShowLogin} />;
   }
