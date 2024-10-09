@@ -95,7 +95,7 @@ const LoginSlideIn = ({ showLogin, setShowLogin }) => {
           duration: 5000,
           isClosable: true,
         });
-        auth.updateCurrentUser = "";
+        auth.updateCurrentUser("");
         // Reset form fields and switch to login mode
         setIsSignup(false);
         setEmail("");
